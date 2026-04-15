@@ -1,0 +1,26 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4319
+      http:
+        endpoint: 0.0.0.0:4320
+
+processors:
+  batch:
+
+exporters:
+  debug:
+    verbosity: detailed
+  otlphttp/datadog:
+    endpoint: https://otlp.datadoghq.com
+    headers:
+      dd-api-key: ${DD_API_KEY}
+      dd-otel-metric-config: '{"histograms": {"mode": "distributions", "send_aggregation_metrics": true}}'
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, otlphttp/datadog]

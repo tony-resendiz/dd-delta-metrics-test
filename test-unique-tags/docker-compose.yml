@@ -1,0 +1,39 @@
+services:
+  otel-collector:
+    container_name: otel-collector-test-unique-tags
+    image: otel/opentelemetry-collector-contrib:0.104.0
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otelcol/config.yaml:/etc/otelcol/config.yaml:ro
+    env_file:
+      - ../.env
+    ports:
+      - "4319:4319"
+      - "4320:4320"
+
+  service-a:
+    container_name: service-a-test-unique-tags
+    build: ./app
+    environment:
+      OTEL_SERVICE_NAME: service-a-test-unique-tags
+      OTEL_EXPORT_INTERVAL_MS: 5000
+    depends_on:
+      - otel-collector
+
+  service-b:
+    container_name: service-b-test-unique-tags
+    build: ./app
+    environment:
+      OTEL_SERVICE_NAME: service-b-test-unique-tags
+      OTEL_EXPORT_INTERVAL_MS: 5000
+    depends_on:
+      - otel-collector
+
+  service-c:
+    container_name: service-c-test-unique-tags
+    build: ./app
+    environment:
+      OTEL_SERVICE_NAME: service-c-test-unique-tags
+      OTEL_EXPORT_INTERVAL_MS: 5000
+    depends_on:
+      - otel-collector
